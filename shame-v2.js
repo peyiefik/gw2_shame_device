@@ -126,19 +126,31 @@
       }
 
       if (/\s+Specialist$/i.test(title)) {
+        const mechanicName = title.replace(/\s+Specialist$/i, "");
         titleEl.textContent = "Repeat Customer";
-        if (statEl) statEl.textContent = `${title.replace(/\s+Specialist$/i, "")} · ${statEl.textContent}`;
+        if (statEl && !statEl.dataset.polished) {
+          statEl.textContent = `${mechanicName} · ${statEl.textContent}`;
+          statEl.dataset.polished = "true";
+        }
         roastEl.textContent = specificRoast(title);
         return;
       }
 
-      if (descriptions[title]) roastEl.textContent = descriptions[title];
+      if (descriptions[title] && roastEl.textContent !== descriptions[title]) {
+        roastEl.textContent = descriptions[title];
+      }
     });
   }
 
   const awardsGrid = document.getElementById("awards-grid");
   if (awardsGrid) {
-    new MutationObserver(polishAwards).observe(awardsGrid, { childList: true, subtree: true });
+    // Only watch direct children being replaced by app.js. Watching the full subtree
+    // caused polishAwards() to trigger itself whenever it edited award text.
+    new MutationObserver(() => polishAwards()).observe(awardsGrid, {
+      childList: true,
+      subtree: false,
+    });
+    polishAwards();
   }
 
   const copyButton = document.getElementById("copy-button");
