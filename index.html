@@ -96,7 +96,7 @@
             <tbody id="leaderboard-body"></tbody>
           </table>
         </div>
-        <p class="method-note">“Mechanics” counts Elite Insights mechanic appearances weighted by EI severity. A mechanic entry is not always a mistake, so this is evidence for comedy, not a performance verdict.</p>
+        <p class="method-note">“Mechanics” now filters out Sev0/informational noise such as Vale Guardian floor ticks, attunements and successful breakbar events. Rapid repeat ticks are collapsed, and lower-severity entries are only kept when Elite Insights describes them like an actual player mistake. It is still a comedy score, not a serious performance grade.</p>
       </section>
 
       <section class="panel" aria-labelledby="encounters-title">
@@ -116,6 +116,7 @@
     </footer>
   </main>
 
+  <script src="shame-v2.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
