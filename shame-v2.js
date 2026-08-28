@@ -2,6 +2,7 @@
   "use strict";
 
   const originalFetch = window.fetch.bind(window);
+
   const noisy = [
     /^floor\s+[rbg]$/i,
     /^attune\s+[rbg]$/i,
@@ -14,7 +15,12 @@
     /stood in green/i,
     /breakbar broken/i,
   ];
+
   const sev1FailureWords = /(fail|failed|hit by|killed|downed|knock|launch|fear|stun|bomb|oil|flak|cannon|shockwave|teleport|port|sacrifice|fixat|poison|corrupt|black|orb|mine|trap|slam|smash|shock)/i;
+
+  function first(array) {
+    return Array.isArray(array) && array.length ? array[0] : null;
+  }
 
   function mechanicText(m) {
     return [m?.name, m?.fullName, m?.description].filter(Boolean).join(" · ");
@@ -33,36 +39,106 @@
     const full = String(m?.fullName || "").trim();
     const short = String(m?.name || "").trim();
     if (!full) return short || "Unknown mechanic";
-    const cleaned = full.replace(/\s*\((?:hit by|player hit by|damage from|dmg from)?[^)]*\)\s*$/i, "").trim();
+    const cleaned = full
+      .replace(/\s*\((?:hit by|player hit by|damage from|dmg from)?[^)]*\)\s*$/i, "")
+      .trim();
     return cleaned || full || short;
   }
 
   function collapseRapidRepeats(events, cooldownMs) {
     if (!Array.isArray(events) || events.length < 2) return events || [];
     const minGap = Math.max(750, Number(cooldownMs) || 1250);
-    const last = new Map();
-    return events.filter((event) => {
+    const lastByActor = new Map();
+    const result = [];
+
+    for (const event of events) {
       const actor = String(event?.actor || event?.instid || "unknown");
       const time = Number(event?.time);
-      if (!Number.isFinite(time)) return true;
-      const previous = last.get(actor);
-      if (Number.isFinite(previous) && time - previous < minGap) return false;
-      last.set(actor, time);
-      return true;
-    });
+      if (Number.isFinite(time)) {
+        const previous = lastByActor.get(actor);
+        if (Number.isFinite(previous) && time - previous < minGap) continue;
+        lastByActor.set(actor, time);
+      }
+      result.push(event);
+    }
+    return result;
   }
 
-  function cleanEliteInsightsJson(json) {
-    if (!json || !Array.isArray(json.mechanics)) return json;
-    json.mechanics = json.mechanics
-      .filter(usefulMechanic)
-      .map((m) => ({
-        ...m,
-        name: friendlyName(m),
-        mechanicsData: collapseRapidRepeats(m.mechanicsData, m.internalCooldown),
+  function compactPlayer(player) {
+    const dps = first(player?.dpsAll) || {};
+    const defense = first(player?.defenses) || {};
+    const support = first(player?.support) || {};
+    const stats = first(player?.statsAll) || {};
+    const active = first(player?.activeTimes);
+
+    return {
+      name: player?.name || "Unknown",
+      account: player?.account || player?.name || "Unknown",
+      profession: player?.profession || "Unknown",
+      notInSquad: Boolean(player?.notInSquad),
+      friendlyNPC: Boolean(player?.friendlyNPC),
+      dpsAll: [{
+        dps: Number(dps.dps) || 0,
+        damage: Number(dps.damage) || 0,
+        breakbarDamage: Number(dps.breakbarDamage) || 0,
+      }],
+      activeTimes: [Number(active) || 0],
+      defenses: [{
+        deadCount: Number(defense.deadCount) || 0,
+        downCount: Number(defense.downCount) || 0,
+        downDuration: Number(defense.downDuration) || 0,
+        damageTaken: Number(defense.damageTaken) || 0,
+        dodgeCount: Number(defense.dodgeCount) || 0,
+      }],
+      support: [{
+        resurrects: Number(support.resurrects) || 0,
+        resurrectTime: Number(support.resurrectTime) || 0,
+        condiCleanse: Number(support.condiCleanse) || 0,
+        boonStrips: Number(support.boonStrips) || 0,
+      }],
+      statsAll: [{
+        wasted: Number(stats.wasted) || 0,
+        skillCastUptime: Number(stats.skillCastUptime) || 0,
+        distToCom: Number.isFinite(Number(stats.distToCom)) ? Number(stats.distToCom) : -1,
+      }],
+    };
+  }
+
+  function compactMechanic(mechanic) {
+    if (!usefulMechanic(mechanic)) return null;
+
+    const compactEvents = collapseRapidRepeats(mechanic?.mechanicsData, mechanic?.internalCooldown)
+      .map((event) => ({
+        actor: event?.actor || null,
+        weight: Number(event?.weight) || 1,
       }))
-      .filter((m) => m.mechanicsData.length > 0);
-    return json;
+      .filter((event) => event.actor);
+
+    if (!compactEvents.length) return null;
+
+    return {
+      name: friendlyName(mechanic),
+      severity: mechanic?.severity || "Sev1",
+      mechanicsData: compactEvents,
+    };
+  }
+
+  function compactEliteInsightsJson(json) {
+    const firstPhase = first(json?.phases);
+    const firstTarget = first(json?.targets);
+
+    return {
+      fightName: json?.fightName || json?.encounterName || firstPhase?.name || firstTarget?.name || "Unknown encounter",
+      encounterName: json?.encounterName || null,
+      success: json?.success === true,
+      durationMS: Number(json?.durationMS) || 0,
+      phases: firstPhase?.name ? [{ name: firstPhase.name }] : [],
+      targets: firstTarget?.name ? [{ name: firstTarget.name }] : [],
+      players: Array.isArray(json?.players) ? json.players.map(compactPlayer) : [],
+      mechanics: Array.isArray(json?.mechanics)
+        ? json.mechanics.map(compactMechanic).filter(Boolean)
+        : [],
+    };
   }
 
   window.fetch = async (...args) => {
@@ -71,13 +147,17 @@
     if (!/https:\/\/(?:b\.)?dps\.report\/getJson/i.test(url)) return response;
 
     try {
-      const json = cleanEliteInsightsJson(await response.clone().json());
-      return new Response(JSON.stringify(json), {
+      // Parse the response once, keep only the tiny subset Shame Device needs,
+      // and let the original response become collectible immediately.
+      const json = await response.json();
+      const compact = compactEliteInsightsJson(json);
+      return new Response(JSON.stringify(compact), {
         status: response.status,
         statusText: response.statusText,
         headers: { "Content-Type": "application/json" },
       });
-    } catch {
+    } catch (error) {
+      console.warn("Shame Device compaction failed; using original response", error);
       return response;
     }
   };
@@ -144,9 +224,7 @@
 
   const awardsGrid = document.getElementById("awards-grid");
   if (awardsGrid) {
-    // Only watch direct children being replaced by app.js. Watching the full subtree
-    // caused polishAwards() to trigger itself whenever it edited award text.
-    new MutationObserver(() => polishAwards()).observe(awardsGrid, {
+    new MutationObserver(polishAwards).observe(awardsGrid, {
       childList: true,
       subtree: false,
     });
@@ -173,6 +251,7 @@
         if (roast) lines.push(`_${roast}_`);
         lines.push("");
       }
+
       const text = lines.join("\n").trim();
       try {
         await navigator.clipboard.writeText(text);
