@@ -70,29 +70,54 @@
         <div id="awards-grid" class="awards-grid"></div>
       </section>
 
-      <section id="support-review-section" class="panel" aria-labelledby="support-review-title" hidden>
+      <section id="review-section" class="panel" aria-labelledby="review-title" hidden>
         <div class="section-heading">
           <div>
             <p class="section-kicker">Human review</p>
-            <h2 id="support-review-title">Suspicious support datapoints</h2>
+            <h2 id="review-title">Suspicious datapoints</h2>
           </div>
-          <span id="support-review-count" class="muted-note"></span>
+          <span id="review-count" class="muted-note"></span>
         </div>
-        <p class="method-note">Nothing here is removed automatically. These are isolated Quickness/Alacrity uptime dips that look very different from the same provider's other logs. Uncheck “Use” to exclude only that one support-uptime datapoint; all other raid stats and awards keep the log.</p>
+        <p class="method-note">Nothing here is removed automatically. The machine flags isolated values that look unlike the same player's other comparable logs. Uncheck “Use” to exclude only that one player + stat + encounter datapoint; the rest of the log stays intact. Encounter-sensitive stats are compared only against repeat attempts of the same encounter, while Quickness/Alacrity uptime is compared across the provider's raid night.</p>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>Use</th>
-                <th>Provider</th>
-                <th>Boon</th>
+                <th>Player</th>
+                <th>Stat</th>
                 <th>Encounter</th>
                 <th>This log</th>
                 <th>Usual</th>
-                <th>Gap</th>
+                <th>Difference</th>
               </tr>
             </thead>
-            <tbody id="support-review-body"></tbody>
+            <tbody id="review-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="boon-estimate-section" class="panel" aria-labelledby="boon-estimate-title" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Role inference</p>
+            <h2 id="boon-estimate-title">Ambiguous boon assignments</h2>
+          </div>
+          <span id="boon-estimate-count" class="muted-note"></span>
+        </div>
+        <p class="method-note">When a log has more boon-generator candidates than a normal assignment suggests, the Shame Device estimates the actual Quickness and Alacrity providers per subgroup. Boon generation is the main signal; subgroup uptime is used only as a tie-breaker. Rejected candidates are shown so you can sanity-check the guess.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Encounter</th>
+                <th>Candidates</th>
+                <th>Estimated Quickness</th>
+                <th>Estimated Alacrity</th>
+                <th>Rejected incidental candidates</th>
+              </tr>
+            </thead>
+            <tbody id="boon-estimate-body"></tbody>
           </table>
         </div>
       </section>
@@ -123,7 +148,7 @@
             <tbody id="leaderboard-body"></tbody>
           </table>
         </div>
-        <p class="method-note">Mechanic score filters out Sev0/informational noise and is normalized per attended log. Boon support is detected from Elite Insights Quickness/Alacrity generation. Quickness Outage and Alacrity Outage measure subgroup boon uptime, while isolated one-off support dips can now be reviewed manually above.</p>
+        <p class="method-note">Mechanic score filters out Sev0/informational noise and is normalized per attended log. Boon support is inferred from Elite Insights Quickness/Alacrity generation and subgroup structure. Review exclusions only alter the selected datapoint; they do not delete the encounter or rewrite unrelated stats.</p>
       </section>
 
       <section class="panel" aria-labelledby="encounters-title">
@@ -143,6 +168,6 @@
     </footer>
   </main>
 
-  <script src="app-v4.js?v=1"></script>
+  <script src="app-v5.js?v=1"></script>
 </body>
 </html>
