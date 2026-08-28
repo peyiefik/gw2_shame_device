@@ -101,20 +101,20 @@
         <div class="section-heading">
           <div>
             <p class="section-kicker">Role inference</p>
-            <h2 id="boon-estimate-title">Ambiguous boon assignments</h2>
+            <h2 id="boon-estimate-title">Review boon assignments</h2>
           </div>
           <span id="boon-estimate-count" class="muted-note"></span>
         </div>
-        <p class="method-note">When a log has more boon-generator candidates than a normal assignment suggests, the Shame Device estimates the actual Quickness and Alacrity providers per subgroup. Boon generation is the main signal; subgroup uptime is used only as a tie-breaker. Rejected candidates are shown so you can sanity-check the guess.</p>
+        <p class="method-note">Ambiguous logs show every Quickness and Alacrity candidate with a checkbox. The machine checks its estimated providers by default and leaves likely incidental generators unchecked. You can override it: checked names count as that boon provider for that encounter; unticked names do not count toward provider averages, Quickness/Alacrity Outage, or boon-support classification for that log.</p>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>Encounter</th>
-                <th>Candidates</th>
-                <th>Estimated Quickness</th>
-                <th>Estimated Alacrity</th>
-                <th>Rejected incidental candidates</th>
+                <th>Unique candidates</th>
+                <th>Quickness candidates</th>
+                <th>Alacrity candidates</th>
+                <th>Counted</th>
               </tr>
             </thead>
             <tbody id="boon-estimate-body"></tbody>
@@ -148,7 +148,7 @@
             <tbody id="leaderboard-body"></tbody>
           </table>
         </div>
-        <p class="method-note">Mechanic score filters out Sev0/informational noise and is normalized per attended log. Boon support is inferred from Elite Insights Quickness/Alacrity generation and subgroup structure. Review exclusions only alter the selected datapoint; they do not delete the encounter or rewrite unrelated stats.</p>
+        <p class="method-note">Mechanic score filters out Sev0/informational noise and is normalized per attended log. Boon support is inferred from Elite Insights Quickness/Alacrity generation and subgroup structure, then can be manually corrected in the boon-assignment table. Review exclusions only alter the selected datapoint; they do not delete the encounter or rewrite unrelated stats.</p>
       </section>
 
       <section class="panel" aria-labelledby="encounters-title">
@@ -168,6 +168,6 @@
     </footer>
   </main>
 
-  <script src="app-v5.js?v=1"></script>
+  <script src="app-v6.js?v=1"></script>
 </body>
 </html>
