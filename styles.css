@@ -270,6 +270,58 @@ tbody tr:hover { background: rgba(255,255,255,0.025); }
 .good-number { color: #8bd7aa; font-weight: 750; }
 .method-note { margin: 12px 2px 0; }
 
+/* Keep the boon assignment review as compact as the old text table: one small
+   checkbox in front of each candidate, not a stack of full-size toggle rows. */
+#boon-estimate-section .table-wrap { overflow-x: hidden; }
+#boon-estimate-section table {
+  min-width: 0;
+  table-layout: fixed;
+}
+#boon-estimate-section th,
+#boon-estimate-section td {
+  padding: 9px 10px;
+  text-align: left;
+  vertical-align: top;
+  white-space: normal;
+}
+#boon-estimate-section th:nth-child(1),
+#boon-estimate-section td:nth-child(1) { width: 17%; }
+#boon-estimate-section th:nth-child(2),
+#boon-estimate-section td:nth-child(2) { width: 10%; text-align: center; }
+#boon-estimate-section th:nth-child(3),
+#boon-estimate-section td:nth-child(3),
+#boon-estimate-section th:nth-child(4),
+#boon-estimate-section td:nth-child(4) { width: 28%; }
+#boon-estimate-section th:nth-child(5),
+#boon-estimate-section td:nth-child(5) { width: 17%; text-align: center; }
+#boon-estimate-body label.toggle {
+  display: flex;
+  width: 100%;
+  margin: 0 0 4px !important;
+  gap: 6px;
+  align-items: baseline !important;
+  font-size: 0.81rem;
+  line-height: 1.22;
+}
+#boon-estimate-body label.toggle:last-child { margin-bottom: 0 !important; }
+#boon-estimate-body label.toggle input {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  margin: 2px 0 0;
+}
+#boon-estimate-body label.toggle > span { min-width: 0; }
+#boon-estimate-body label.toggle br { display: none; }
+#boon-estimate-body label.toggle .player-account {
+  display: inline;
+  margin-left: 4px;
+}
+#boon-estimate-body label.toggle .muted-note {
+  margin-left: 5px;
+  font-size: 0.72rem;
+}
+#boon-estimate-body td:nth-child(5) .muted-note { display: none; }
+
 .encounter-list { display: grid; gap: 8px; }
 .encounter-row {
   display: grid;
@@ -311,6 +363,9 @@ footer p { margin: 4px 0; }
   .award-card.featured .award-stat { grid-column: 2; text-align: left; }
   .encounter-row { grid-template-columns: auto minmax(0, 1fr) auto; }
   .encounter-link { grid-column: 2 / -1; }
+
+  #boon-estimate-section .table-wrap { overflow-x: auto; }
+  #boon-estimate-section table { min-width: 700px; table-layout: auto; }
 }
 
 @media (max-width: 480px) {
