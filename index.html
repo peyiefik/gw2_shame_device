@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Turn Guild Wars 2 dps.report logs into an unnecessarily judgmental raid awards ceremony." />
+  <title>GW2 Shame Device</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <div class="eyebrow">GUILD WARS 2 · RAID FORENSICS</div>
+      <h1>GW2 Shame Device</h1>
+      <p class="hero-copy">Paste your dps.report links. The machine will inspect the evidence, merge the whole raid night by account name, and issue awards nobody asked for.</p>
+    </header>
+
+    <section class="panel input-panel" aria-labelledby="input-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Step 1</p>
+          <h2 id="input-title">Submit the evidence</h2>
+        </div>
+        <span class="badge">No login · no backend</span>
+      </div>
+
+      <label for="report-input">dps.report links</label>
+      <textarea id="report-input" rows="7" spellcheck="false" placeholder="https://dps.report/xxxx-YYYYMMDD-HHMMSS_boss&#10;https://dps.report/yyyy-YYYYMMDD-HHMMSS_boss"></textarea>
+      <p class="field-help">One per line is easiest, but spaces and commas also work. Both dps.report and b.dps.report links are accepted.</p>
+
+      <div class="controls-row">
+        <label class="toggle">
+          <input id="include-wipes" type="checkbox" checked />
+          <span>Include wipes in the shame</span>
+        </label>
+        <label class="toggle">
+          <input id="show-accounts" type="checkbox" />
+          <span>Show account names</span>
+        </label>
+      </div>
+
+      <div class="button-row">
+        <button id="analyze-button" class="button primary" type="button">Analyze the evidence</button>
+        <button id="demo-button" class="button secondary" type="button">Load demo night</button>
+        <button id="clear-button" class="button ghost" type="button">Clear</button>
+      </div>
+
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+      <div id="errors" class="error-list" aria-live="polite"></div>
+    </section>
+
+    <section id="results" class="results" hidden>
+      <section class="night-summary" aria-label="Raid night summary">
+        <div class="summary-copy">
+          <p class="section-kicker">The verdict</p>
+          <h2 id="night-title">Raid Night Awards</h2>
+          <p id="night-subtitle">The logs have spoken.</p>
+        </div>
+        <div id="summary-stats" class="summary-stats"></div>
+      </section>
+
+      <section aria-labelledby="awards-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Official findings</p>
+            <h2 id="awards-title">Raid Oscars</h2>
+          </div>
+          <button id="copy-button" class="button secondary compact" type="button">Copy Discord summary</button>
+        </div>
+        <div id="awards-grid" class="awards-grid"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="leaderboard-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Receipts</p>
+            <h2 id="leaderboard-title">Squad leaderboard</h2>
+          </div>
+          <span class="muted-note">Click a heading to sort</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-sort="displayName">Player</th>
+                <th data-sort="encounters">Logs</th>
+                <th data-sort="dps">DPS</th>
+                <th data-sort="deaths">Deaths</th>
+                <th data-sort="downs">Downs</th>
+                <th data-sort="breakbar">CC</th>
+                <th data-sort="resurrects">Res</th>
+                <th data-sort="mechanicScore">Mechanics</th>
+                <th data-sort="distance">Cmd dist.</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+          </table>
+        </div>
+        <p class="method-note">“Mechanics” counts Elite Insights mechanic appearances weighted by EI severity. A mechanic entry is not always a mistake, so this is evidence for comedy, not a performance verdict.</p>
+      </section>
+
+      <section class="panel" aria-labelledby="encounters-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Chain of custody</p>
+            <h2 id="encounters-title">Encounter logs</h2>
+          </div>
+        </div>
+        <div id="encounter-list" class="encounter-list"></div>
+      </section>
+    </section>
+
+    <footer>
+      <p>Fan-made raid nonsense. Not affiliated with ArenaNet, NCSoft, dps.report, or Elite Insights.</p>
+      <p>Data is fetched in your browser from dps.report and is not sent anywhere else by this page.</p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
