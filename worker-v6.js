@@ -4,6 +4,7 @@
 // per-log boon-provider assignment controls.
 importScripts("worker-v5.js?v=2");
 
+const V6_BOON_PROVIDER_THRESHOLD = 5;
 let v6ProviderSelections = new Map();
 
 function v6ProviderKey(url, boon, account) {
@@ -29,7 +30,7 @@ function v6ProviderScore(player, boon) {
 }
 
 function v6Candidates(log, boon) {
-  return (log.players || []).filter((p) => v6Generation(p, boon) >= BOON_PROVIDER_THRESHOLD);
+  return (log.players || []).filter((p) => v6Generation(p, boon) >= V6_BOON_PROVIDER_THRESHOLD);
 }
 
 function v6DefaultChosen(log, boon) {
