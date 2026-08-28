@@ -96,7 +96,7 @@
             <tbody id="leaderboard-body"></tbody>
           </table>
         </div>
-        <p class="method-note">Mechanic score filters out Sev0/informational noise and is normalized per attended log. The “Support Excuse Denied” award uses Elite Insights boon-generation data: anyone with meaningful Quickness or Alacrity generation on an included log is excluded, so incidental boon sharing does not count as a support role.</p>
+        <p class="method-note">Mechanic score filters out Sev0/informational noise and is normalized per attended log. Boon support is detected from Elite Insights Quickness/Alacrity generation. Quickness Outage and Alacrity Outage then measure the provider's subgroup boon uptime, weighted by teammate active time and averaged across the logs where that player actually provided the boon.</p>
       </section>
 
       <section class="panel" aria-labelledby="encounters-title">
@@ -116,6 +116,6 @@
     </footer>
   </main>
 
-  <script src="app-v2.js?v=1"></script>
+  <script src="app-v3.js?v=1"></script>
 </body>
 </html>
