@@ -21,12 +21,12 @@
           <p class="section-kicker">Step 1</p>
           <h2 id="input-title">Submit the evidence</h2>
         </div>
-        <span class="badge">No login · no backend</span>
+        <span class="badge">Background analysis · no backend</span>
       </div>
 
       <label for="report-input">dps.report links</label>
       <textarea id="report-input" rows="7" spellcheck="false" placeholder="https://dps.report/xxxx-YYYYMMDD-HHMMSS_boss&#10;https://dps.report/yyyy-YYYYMMDD-HHMMSS_boss"></textarea>
-      <p class="field-help">One per line is easiest, but spaces and commas also work. Both dps.report and b.dps.report links are accepted.</p>
+      <p class="field-help">One per line is easiest, but spaces and commas also work. Both dps.report and b.dps.report links are accepted. Large raid nights are parsed in a background worker so the page stays responsive.</p>
 
       <div class="controls-row">
         <label class="toggle">
@@ -89,14 +89,14 @@
                 <th data-sort="downs">Downs</th>
                 <th data-sort="breakbar">CC</th>
                 <th data-sort="resurrects">Res</th>
-                <th data-sort="mechanicScore">Mechanics</th>
+                <th data-sort="mechanicScorePerLog">Mech./log</th>
                 <th data-sort="distance">Cmd dist.</th>
               </tr>
             </thead>
             <tbody id="leaderboard-body"></tbody>
           </table>
         </div>
-        <p class="method-note">“Mechanics” now filters out Sev0/informational noise such as Vale Guardian floor ticks, attunements and successful breakbar events. Rapid repeat ticks are collapsed, and lower-severity entries are only kept when Elite Insights describes them like an actual player mistake. It is still a comedy score, not a serious performance grade.</p>
+        <p class="method-note">Mechanic score filters out Sev0/informational noise such as Vale Guardian floor ticks, attunements and successful breakbar events. Rapid repeat ticks are collapsed, and the score is normalized per attended log so people are not punished simply for staying longer.</p>
       </section>
 
       <section class="panel" aria-labelledby="encounters-title">
@@ -116,7 +116,6 @@
     </footer>
   </main>
 
-  <script src="shame-v2.js?v=4"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
