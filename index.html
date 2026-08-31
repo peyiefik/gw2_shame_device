@@ -148,7 +148,7 @@
             <tbody id="leaderboard-body"></tbody>
           </table>
         </div>
-        <p class="method-note">Mechanic score filters out Sev0/informational noise and is normalized per attended log. Boon support is inferred from Elite Insights Quickness/Alacrity generation and subgroup structure, then can be manually corrected in the boon-assignment table. Review exclusions only alter the selected datapoint; they do not delete the encounter or rewrite unrelated stats.</p>
+        <p class="method-note">Mechanic score filters out Sev0/informational noise and is normalized per attended log. On wipes, only the first two unique players to enter downstate and the first two unique players to die count toward Downs and Deaths; later cleanup after the squad has effectively called gg is ignored. Kills still count every down and death. Boon support is inferred from Elite Insights Quickness/Alacrity generation and subgroup structure, then can be manually corrected in the boon-assignment table. Review exclusions only alter the selected datapoint; they do not delete the encounter or rewrite unrelated stats.</p>
       </section>
 
       <section class="panel" aria-labelledby="encounters-title">
@@ -168,6 +168,7 @@
     </footer>
   </main>
 
-  <script src="app-v6.js?v=1"></script>
+  <script src="worker-route-v7.js?v=1"></script>
+  <script src="app-v6.js?v=2"></script>
 </body>
 </html>
