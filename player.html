@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Inspect one Guild Wars 2 player's performance across dps.report logs." />
+  <title>Player Inspector · GW2 Shame Device</title>
+  <link rel="stylesheet" href="styles.css?v=3" />
+  <link rel="stylesheet" href="player.css?v=1" />
+</head>
+<body>
+  <main class="page-shell player-page">
+    <header class="player-hero">
+      <a class="back-link" href="index.html">← Back to raid awards</a>
+      <div class="eyebrow">GUILD WARS 2 · PLAYER FORENSICS</div>
+      <h1>Player Inspector</h1>
+      <p class="hero-copy">One player, every submitted pull. Compare specs, role changes, damage, boon coverage, healing, first downs/deaths, weapons, mechanics, and the pulls you actually want to judge.</p>
+    </header>
+
+    <section class="panel player-input-panel" aria-labelledby="player-input-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Evidence</p>
+          <h2 id="player-input-title">Raid logs</h2>
+        </div>
+        <span class="badge">Uses your last raid-night links automatically</span>
+      </div>
+      <textarea id="player-report-input" rows="5" spellcheck="false" placeholder="Paste dps.report links here"></textarea>
+      <div class="button-row">
+        <button id="player-analyze-button" class="button primary" type="button">Analyze player data</button>
+      </div>
+      <div id="player-status" class="status" role="status" aria-live="polite"></div>
+      <div id="player-errors" class="error-list"></div>
+    </section>
+
+    <section id="player-results" class="results" hidden>
+      <section class="panel player-topbar">
+        <div class="player-selector-block">
+          <label for="player-select">Player</label>
+          <select id="player-select"></select>
+        </div>
+
+        <div class="role-control-block">
+          <span class="control-label">Judge them as</span>
+          <div class="segmented-control" role="group" aria-label="Player role">
+            <button type="button" data-role-choice="dps">DPS</button>
+            <button type="button" data-role-choice="boondps">Boon DPS</button>
+            <button type="button" data-role-choice="healer">Healer</button>
+          </div>
+        </div>
+
+        <div class="role-control-block">
+          <span class="control-label">Provided boon</span>
+          <div class="segmented-control" role="group" aria-label="Provided boon">
+            <button type="button" data-boon-choice="none">None</button>
+            <button type="button" data-boon-choice="quickness">Quickness</button>
+            <button type="button" data-boon-choice="alacrity">Alacrity</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="player-heading-row">
+        <div>
+          <p class="section-kicker">Current subject</p>
+          <h2 id="player-title">Player performance</h2>
+          <p id="player-subtitle" class="muted-note"></p>
+        </div>
+      </section>
+
+      <section id="player-summary" class="summary-stats player-summary"></section>
+
+      <section class="panel" aria-labelledby="role-switch-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Pull selection</p>
+            <h2 id="role-switch-title">Role & spec switching</h2>
+          </div>
+          <div class="button-row compact-actions">
+            <button id="include-all-pulls" class="button ghost compact" type="button">Include all</button>
+            <button id="exclude-wipes" class="button ghost compact" type="button">Exclude wipes</button>
+          </div>
+        </div>
+        <p class="method-note">The machine groups pulls by estimated spec/role/boon. Untick a group to get an off-role block out of the analysis, or fine-tune individual pulls in the table below.</p>
+        <div id="role-switch-filters" class="role-switch-grid"></div>
+      </section>
+
+      <section class="insight-grid">
+        <article class="panel insight-panel good-panel">
+          <p class="section-kicker">What worked</p>
+          <h2>Where they shined</h2>
+          <ul id="strength-list" class="insight-list"></ul>
+        </article>
+        <article class="panel insight-panel bad-panel">
+          <p class="section-kicker">What to fix</p>
+          <h2>Where they lacked</h2>
+          <ul id="weakness-list" class="insight-list"></ul>
+        </article>
+      </section>
+
+      <section class="panel" aria-labelledby="trend-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Damage consistency</p>
+            <h2 id="trend-title">DPS across included pulls</h2>
+          </div>
+          <span class="muted-note">Submitted-log comparison, not a benchmark parse</span>
+        </div>
+        <div id="damage-trend" class="damage-trend"></div>
+      </section>
+
+      <section class="details-grid">
+        <article class="panel">
+          <p class="section-kicker">Loadout evidence</p>
+          <h2>Weapons seen</h2>
+          <div id="weapon-summary" class="pill-cloud"></div>
+        </article>
+        <article class="panel">
+          <p class="section-kicker">Repeat offenders</p>
+          <h2>Mechanics</h2>
+          <div id="mechanic-summary" class="pill-cloud"></div>
+        </article>
+      </section>
+
+      <section class="panel" aria-labelledby="spec-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Spec history</p>
+            <h2 id="spec-title">Performance by spec</h2>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="player-table spec-table">
+            <thead>
+              <tr>
+                <th>Spec</th><th>Pulls</th><th>Avg DPS</th><th>Avg HPS</th><th>Quickness</th><th>Alacrity</th><th>1st down/death</th><th>Weapons</th>
+              </tr>
+            </thead>
+            <tbody id="spec-breakdown-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="pulls-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Full pull history</p>
+            <h2 id="pulls-title">Every pull</h2>
+          </div>
+          <span class="muted-note">Untick a pull to remove only that pull from this player's analysis</span>
+        </div>
+        <div class="table-wrap wide-table-wrap">
+          <table class="player-table pull-table">
+            <thead>
+              <tr>
+                <th>Use</th><th>Encounter</th><th>Result</th><th>Character / spec</th><th>Estimated role</th><th>DPS</th><th>vs squad median</th><th>Selected boon</th><th>HPS</th><th>Down/death rank</th><th>Downs/deaths</th><th>Damage taken/min</th><th>CC</th><th>Cast uptime</th><th>Weapons</th><th>Top mechanic</th>
+              </tr>
+            </thead>
+            <tbody id="pull-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <p class="player-method-note">Role labels in the pull table are estimates from boon generation and EXT healing when present. The buttons at the top are the role you want the analysis to judge against. First-down/death ranks come from Elite Insights' timestamped generic Downed/Dead mechanics when available. Weapon data is whatever Elite Insights exposes in the report. This page compares the submitted pulls and squad context; it does not claim a universal benchmark for a spec.</p>
+    </section>
+  </main>
+  <script src="player.js?v=1"></script>
+</body>
+</html>
