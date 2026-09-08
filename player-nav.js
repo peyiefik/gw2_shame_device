@@ -12,7 +12,7 @@
 
   function linkPlayers() {
     for (const name of leaderboard.querySelectorAll(".player-name")) {
-      if (name.closest("a.player-inspect-link")) continue;
+      if (name.querySelector("a.player-inspect-link")) continue;
       const text = name.textContent.trim();
       if (!text) continue;
       const link = document.createElement("a");
@@ -20,6 +20,8 @@
       link.href = `player.html?name=${encodeURIComponent(text)}`;
       link.title = `Inspect ${text}`;
       link.textContent = text;
+      link.style.color = "inherit";
+      link.style.textDecoration = "none";
       name.textContent = "";
       name.appendChild(link);
     }
